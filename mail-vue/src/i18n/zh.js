@@ -390,5 +390,17 @@ const zh = {
     clientId: '客户端 ID',
     clientSecret: '客户端密钥',
     notOwner: '基础邮箱不属于您',
+    aiApiTitle: 'AI / MCP 接口',
+    aiApiDesc: '启用后可通过远程 MCP Server (/api/mcp) 或 Open API (/api/public/*) 让 AI 自动发送、读取与安全删除邮件',
+    aiApiKeyLabel: 'API Key',
+    aiApiKeyEmptyTip: '尚未生成密钥，请点击下方按钮生成',
+    aiKeyReveal: '显示',
+    aiKeyHide: '隐藏',
+    aiKeyRotate: '生成 / 重置密钥',
+    aiKeyRotateConfirm: '重置后旧密钥将立即失效，已连接的 AI 客户端需同步更新。确认继续？',
+    aiMcpEndpoint: 'MCP 端点',
+    aiMcpConfigJson: 'MCP 客户端配置 (Antigravity / Claude / Cursor / Cherry Studio)',
+    aiHttpApiExample: 'HTTP Open API 示例 (cURL)',
+    aiCopyConfig: '复制配置'
 }
 export default zh

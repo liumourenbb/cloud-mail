@@ -390,6 +390,18 @@ const en = {
     clientId: 'Client ID',
     clientSecret: 'Client Secret',
     notOwner: 'Base email does not belong to you',
+    aiApiTitle: 'AI / MCP API',
+    aiApiDesc: 'Allow AI clients to send, read, and safely delete emails via remote MCP Server (/api/mcp) or HTTP Open API (/api/public/*)',
+    aiApiKeyLabel: 'API Key',
+    aiApiKeyEmptyTip: 'No API Key generated yet. Click below to generate one.',
+    aiKeyReveal: 'Reveal',
+    aiKeyHide: 'Hide',
+    aiKeyRotate: 'Generate / Rotate Key',
+    aiKeyRotateConfirm: 'Rotating invalidates the existing key immediately and connected AI clients must be updated. Continue?',
+    aiMcpEndpoint: 'MCP Endpoint',
+    aiMcpConfigJson: 'MCP Client Config (Antigravity / Claude / Cursor / Cherry Studio)',
+    aiHttpApiExample: 'HTTP Open API Example (cURL)',
+    aiCopyConfig: 'Copy Config'
 }
 
 export default en

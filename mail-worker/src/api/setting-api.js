@@ -1,6 +1,7 @@
 import app from '../hono/hono';
 import result from '../model/result';
 import settingService from '../service/setting-service';
+import aiApiAuthHelper from '../helper/ai-api-auth-helper';
 import userContext from "../security/user-context";
 
 app.put('/setting/set', async (c) => {
@@ -32,4 +33,14 @@ app.put('/setting/setBlacklist', async (c) => {
 	const setting = await settingService.setBlacklist(c, await c.req.json());
 	return c.json(result.ok(setting));
 })
+
+app.post('/setting/aiKey/rotate', async (c) => {
+	const data = await aiApiAuthHelper.rotateAiApiKey(c);
+	return c.json(result.ok(data));
+});
+
+app.get('/setting/aiKey', async (c) => {
+	const data = await aiApiAuthHelper.revealAiApiKey(c);
+	return c.json(result.ok(data));
+});
 

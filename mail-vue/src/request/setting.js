@@ -23,3 +23,11 @@ export function deleteBackground() {
 export function setBlackList(params) {
     return http.put('/setting/setBlacklist', params)
 }
+
+export function settingAiKeyRotate() {
+    return http.post('/setting/aiKey/rotate')
+}
+
+export function settingAiKeyReveal() {
+    return http.get('/setting/aiKey')
+}

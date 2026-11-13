@@ -404,6 +404,15 @@
                   </el-button>
                 </div>
               </div>
+              <div class="setting-item">
+                <div><span>{{ $t('aiApiTitle') }}</span></div>
+                <div class="forward">
+                  <span>{{ setting.aiApiStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
+                  <el-button class="opt-button" size="small" type="primary" @click="aiApiShow = true">
+                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                  </el-button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -906,6 +915,12 @@ Authorization: &lt;secret&gt;</pre>
         </el-form>
         <el-button type="primary" style="width: 100%;" :loading="settingLoading" @click="saveAiCodeFilter">{{ $t('save') }}</el-button>
       </el-dialog>
+      <AiApiSettingDialog
+          v-model="aiApiShow"
+          :ai-api-status="setting.aiApiStatus"
+          :masked-key="setting.aiApiKey"
+          @saved="getSettings"
+      />
     </el-scrollbar>
   </div>
 </template>
@@ -927,6 +942,7 @@ import {getTextWidth} from "@/utils/text.js";
 import {fileToBase64} from "@/utils/file-utils.js"
 import {useI18n} from 'vue-i18n';
 import axios from "axios";
+import AiApiSettingDialog from "./components/AiApiSettingDialog.vue";
 
 defineOptions({
   name: 'sys-setting'
@@ -947,6 +963,7 @@ const resendTokenFormShow = ref(false)
 const blackFormShow = ref(false)
 const autoCleanShow = ref(false)
 const aiCodeFilterShow = ref(false)
+const aiApiShow = ref(false)
 const turnstileShow = ref(false)
 const tgSettingShow = ref(false)
 const noticePopupShow = ref(false)
@@ -1663,6 +1680,7 @@ function change(e) {
   delete settingForm.s3SecretKey
   delete settingForm.tgBotToken
   delete settingForm.resendTokens
+  delete settingForm.aiApiKey
   editSetting(settingForm, false)
 }
 

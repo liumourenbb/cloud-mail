@@ -34,8 +34,24 @@ const dbInit = {
 		await this.v3_3DB(c);
 		await this.v3_4DB(c);
 		await this.v3_5DB(c);
+		await this.v3_6DB(c);
 		await settingService.refresh(c);
 		return c.text('success');
+	},
+
+	async v3_6DB(c) {
+		const { results } = await c.env.db.prepare(`SELECT name FROM pragma_table_info('setting')`).all();
+		const columns = new Set((results || []).map(row => row.name));
+		const statements = [];
+		if (!columns.has('ai_api_status')) {
+			statements.push(c.env.db.prepare(`ALTER TABLE setting ADD COLUMN ai_api_status INTEGER NOT NULL DEFAULT 1;`));
+		}
+		if (!columns.has('ai_api_key')) {
+			statements.push(c.env.db.prepare(`ALTER TABLE setting ADD COLUMN ai_api_key TEXT NOT NULL DEFAULT '';`));
+		}
+		if (statements.length > 0) {
+			await c.env.db.batch(statements);
+		}
 	},
 
 	async v3_5DB(c) {

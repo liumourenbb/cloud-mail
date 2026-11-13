@@ -62,6 +62,8 @@ const settingService = {
 		setting.projectLink = projectLink;
 
 		setting.emailPrefixFilter = setting.emailPrefixFilter.split(",").filter(Boolean);
+		setting.aiApiStatus = setting.aiApiStatus ?? 1;
+		setting.aiApiKey = setting.aiApiKey ?? '';
 
 		c.set?.('setting', setting);
 		return setting;
@@ -88,6 +90,9 @@ const settingService = {
 		settingRow.s3AccessKey = settingRow.s3AccessKey ? `${settingRow.s3AccessKey.slice(0, 12)}******` : null;
 		settingRow.s3SecretKey = settingRow.s3SecretKey ? `${settingRow.s3SecretKey.slice(0, 12)}******` : null;
 		settingRow.tgBotToken = settingRow.tgBotToken ? `${settingRow.tgBotToken.slice(0, 20)}******` : null;
+		settingRow.aiApiKey = settingRow.aiApiKey
+			? (settingRow.aiApiKey.length <= 14 ? `${settingRow.aiApiKey.slice(0, 4)}******` : `${settingRow.aiApiKey.slice(0, 10)}******${settingRow.aiApiKey.slice(-4)}`)
+			: '';
 		settingRow.hasR2 = !!c.env.r2
 		settingRow.hasCfEmail = !!c.env.email
 
@@ -128,6 +133,10 @@ const settingService = {
 
 		if (params.webhookUrl !== undefined) {
 			params.webhookUrl = domainUtils.toOssDomain(params.webhookUrl) || '';
+		}
+
+		if (typeof params.aiApiKey === 'string' && params.aiApiKey.includes('******')) {
+			delete params.aiApiKey;
 		}
 
 		params.resendTokens = JSON.stringify(resendTokens);

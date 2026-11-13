@@ -7,6 +7,7 @@ import userService from '../service/user-service';
 import permService from '../service/perm-service';
 import { t } from '../i18n/i18n'
 import app from '../hono/hono';
+import aiApiAuthHelper from '../helper/ai-api-auth-helper';
 
 const exclude = [
 	'/login',
@@ -44,6 +45,7 @@ const requirePerms = [
 	'/setting/set',
 	'/setting/query',
 	'/setting/setBlacklist',
+	'/setting/aiKey',
 	'/user/delete',
 	'/user/setPwd',
 	'/user/setStatus',
@@ -82,7 +84,7 @@ const premKey = {
 	'all-email:query': ['/allEmail/list','/allEmail/latest'],
 	'all-email:delete': ['/allEmail/delete','/allEmail/batchDelete'],
 	'setting:query': ['/setting/query'],
-	'setting:set': ['/setting/set', '/setting/setBackground','/setting/deleteBackground','/setting/setBlacklist'],
+	'setting:set': ['/setting/set', '/setting/setBackground','/setting/deleteBackground','/setting/setBlacklist','/setting/aiKey','/setting/aiKey/rotate'],
 	'analysis:query': ['/analysis/echarts'],
 	'reg-key:add': ['/regKey/add'],
 	'reg-key:query': ['/regKey/list','/regKey/history'],
@@ -101,11 +103,21 @@ app.use('*', async (c, next) => {
 		return await next();
 	}
 
-	if (path.startsWith('/public')) {
+	if (path === '/mcp' || path === '/mcp/') {
+		const authRes = await aiApiAuthHelper.verifyMcpRequest(c);
+		if (!authRes.ok) {
+			return c.json({
+				jsonrpc: '2.0',
+				id: null,
+				error: { code: -32001, message: authRes.message }
+			}, authRes.status);
+		}
+		return await next();
+	}
 
-		const userPublicToken = await c.env.kv.get(KvConst.PUBLIC_KEY);
-		const publicToken = c.req.header(constant.TOKEN_HEADER);
-		if (publicToken !== userPublicToken) {
+	if (path.startsWith('/public')) {
+		const authorized = await aiApiAuthHelper.verifyPublicRequest(c);
+		if (!authorized) {
 			throw new BizError(t('publicTokenFail'), 401);
 		}
 		return await next();
