@@ -90,7 +90,7 @@ const TOOL_SPECS = [
 	{
 		definition: {
 			name: 'delete_emails',
-			description: 'Delete emails by explicit emailIds (max 50 per call). Soft-deletes into Trash by default; set permanent=true ONLY when the user explicitly requests irreversible permanent deletion.',
+			description: 'Soft-delete emails into Trash by explicit emailIds (max 50 per call).',
 			annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
 			inputSchema: {
 				type: 'object',
@@ -103,11 +103,6 @@ const TOOL_SPECS = [
 							{ type: 'array', items: { type: 'integer', minimum: 1 }, maxItems: 50 }
 						],
 						description: 'Email ID(s) to delete (single ID, comma-separated string, or array of up to 50 IDs).'
-					},
-					permanent: {
-						type: 'boolean',
-						default: false,
-						description: 'false (default) = soft delete to trash; true = permanently erase email records and attachments.'
 					}
 				}
 			}

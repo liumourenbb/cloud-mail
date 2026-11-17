@@ -83,17 +83,17 @@ describe('aiMailManager', () => {
 		expect(res).toMatchObject({ emailId: 99, fromEmail: 'admin@example.com', status: 'sent' });
 	});
 
-	it('soft-deletes by default and calls physicsDelete only when permanent is true', async () => {
+	it('always soft-deletes to trash and never calls physicsDelete even if permanent is passed', async () => {
 		mocks.selectRows = [{ emailId: 11 }, { emailId: 12 }];
 
 		const softRes = await aiMailManager.deleteEmails(mockCtx, { emailIds: [11, 12] });
-		expect(softRes).toEqual({ deletedCount: 2, permanent: false, emailIds: [11, 12] });
+		expect(softRes).toEqual({ deletedCount: 2, emailIds: [11, 12] });
 		expect(mocks.updateCalls).toEqual([{ isDel: 1 }]);
 		expect(mocks.physicsDelete).not.toHaveBeenCalled();
 
-		const hardRes = await aiMailManager.deleteEmails(mockCtx, { emailIds: '11,12', permanent: true });
-		expect(hardRes).toEqual({ deletedCount: 2, permanent: true, emailIds: [11, 12] });
-		expect(mocks.physicsDelete).toHaveBeenCalledWith(mockCtx, { emailIds: '11,12' });
+		const ignoredPermanentRes = await aiMailManager.deleteEmails(mockCtx, { emailIds: '11,12', permanent: true });
+		expect(ignoredPermanentRes).toEqual({ deletedCount: 2, emailIds: [11, 12] });
+		expect(mocks.physicsDelete).not.toHaveBeenCalled();
 	});
 
 	it('updates unread state for existing emails and handles empty matches safely', async () => {
@@ -104,6 +104,6 @@ describe('aiMailManager', () => {
 
 		mocks.selectRows = [];
 		const emptyRes = await aiMailManager.deleteEmails(mockCtx, { emailIds: [999] });
-		expect(emptyRes).toEqual({ deletedCount: 0, permanent: false, emailIds: [] });
+		expect(emptyRes).toEqual({ deletedCount: 0, emailIds: [] });
 	});
 });

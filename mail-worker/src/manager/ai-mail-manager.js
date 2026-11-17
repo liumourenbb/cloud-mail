@@ -229,10 +229,9 @@ const aiMailManager = {
 		};
 	},
 
-	/** 删除指定邮件列表（默认安全软删除移入回收站；显式 permanent=true 才物理清除）。 */
+	/** 软删除指定邮件列表（仅移入回收站，不支持永久物理删除）。 */
 	async deleteEmails(c, params = {}) {
 		const ids = aiMailHelper.normalizeEmailIds(params.emailIds);
-		const permanent = params.permanent === true || params.permanent === 'true';
 		const rows = await orm(c)
 			.select({ emailId: email.emailId })
 			.from(email)
@@ -241,18 +240,13 @@ const aiMailManager = {
 
 		const existingIds = rows.map(row => row.emailId);
 		if (existingIds.length === 0) {
-			return { deletedCount: 0, permanent, emailIds: [] };
+			return { deletedCount: 0, emailIds: [] };
 		}
 
-		if (permanent) {
-			await emailService.physicsDelete(c, { emailIds: existingIds.join(',') });
-		} else {
-			await orm(c).update(email).set({ isDel: isDel.DELETE }).where(inArray(email.emailId, existingIds)).run();
-		}
+		await orm(c).update(email).set({ isDel: isDel.DELETE }).where(inArray(email.emailId, existingIds)).run();
 
 		return {
 			deletedCount: existingIds.length,
-			permanent,
 			emailIds: existingIds
 		};
 	},
