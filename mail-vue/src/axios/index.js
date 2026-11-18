@@ -2,7 +2,6 @@ import axios from "axios";
 import router from "@/router";
 import i18n from "@/i18n/index.js";
 import {useSettingStore} from "@/store/setting.js";
-import {resolveApiBaseUrl} from "@/utils/backend-router.js";
 
 let http = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL
@@ -10,7 +9,6 @@ let http = axios.create({
 
 http.interceptors.request.use(config => {
     const { lang } = useSettingStore();
-    config.baseURL = resolveApiBaseUrl();
     config.headers.Authorization = `${localStorage.getItem('token')}`
     config.headers['accept-language'] = lang
     return config
