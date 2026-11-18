@@ -8,12 +8,12 @@ enabled = true
 
 [[d1_databases]]
 binding = "db"
-database_name = "cloudmail"
-database_id = "822c40e0-b659-476e-ab7f-7583c209c778"
+database_name = "cloudmail-multi"
+database_id = "4e77b5f6-5422-427a-90a9-4bc19a12ae6b"
 
 [[kv_namespaces]]
 binding = "kv"
-id = "c1956161b6324fe1a43bcb7bc94b6885"
+id = "96a21339526d41798572de25b229dc3f"
 
 #[[r2_buckets]]
 #binding = "r2"			#r2对象存储绑定名默认不可修改
