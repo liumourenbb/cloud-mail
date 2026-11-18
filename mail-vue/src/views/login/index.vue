@@ -158,7 +158,7 @@
 <script setup>
 import router from "@/router";
 import {useRoute} from "vue-router";
-import {computed, nextTick, reactive, ref} from "vue";
+import {computed, nextTick, reactive, ref, watch} from "vue";
 import {login} from "@/request/login.js";
 import {register} from "@/request/login.js";
 import {websiteConfig} from "@/request/setting.js";
@@ -169,6 +169,7 @@ import {useUserStore} from "@/store/user.js";
 import {useUiStore} from "@/store/ui.js";
 import {Icon} from "@iconify/vue";
 import {cvtR2Url} from "@/utils/convert.js";
+import {getActiveSuffix, getLoginDomainList, switchBackendBySuffix} from "@/utils/backend-router.js";
 import {loginUserInfo} from "@/request/my.js";
 import {permsToRouter} from "@/perm/perm.js";
 import {useI18n} from "vue-i18n";
@@ -225,9 +226,15 @@ const registerForm = reactive({
   confirmPassword: '',
   code: null
 })
-const domainList = settingStore.domainList;
+const domainList = computed(() => getLoginDomainList(settingStore.domainList));
 const registerLoading = ref(false)
-suffix.value = domainList[0]
+suffix.value = getActiveSuffix() || domainList.value[0] || ''
+watch(suffix, (val) => {
+  const { changed } = switchBackendBySuffix(val);
+  if (changed) {
+    refreshWebsiteConfig();
+  }
+});
 const verifyShow = ref(false)
 let verifyToken = ''
 let turnstileId = null
@@ -418,6 +425,7 @@ function bind() {
   }
 
   const form = {email, oauthUserId: bindForm.oauthUserId, code: bindForm.code}
+  switchBackendBySuffix(email)
 
   bindLoading.value = true
   oauthBindUser(form).then(data => {
@@ -460,6 +468,7 @@ const submit = () => {
     return
   }
 
+  switchBackendBySuffix(email)
   loginLoading.value = true
   login(email, form.password).then(async data => {
     await saveToken(data.token)
@@ -470,7 +479,7 @@ const submit = () => {
 
 async function saveToken(token) {
   localStorage.setItem('token', token)
-  refreshWebsiteConfig()
+  await refreshWebsiteConfig()
   const user = await loginUserInfo();
   accountStore.currentAccountId = user.account.accountId;
   accountStore.currentAccount = user.account;
@@ -486,11 +495,11 @@ async function saveToken(token) {
 }
 
 function refreshWebsiteConfig() {
-  websiteConfig().then(setting => {
+  return websiteConfig().then(setting => {
     settingStore.settings = setting
     settingStore.domainList = setting.domainList
-    if (!suffix.value && setting.domainList.length > 0) {
-      suffix.value = setting.domainList[0]
+    if (!suffix.value && domainList.value.length > 0) {
+      suffix.value = domainList.value[0]
     }
     document.title = setting.title
   }).catch(e => {
@@ -524,6 +533,7 @@ function submitRegister() {
   }
 
   const email = getFullEmail(registerForm.email);
+  switchBackendBySuffix(email);
 
   if (!isEmail(email)) {
     ElMessage({

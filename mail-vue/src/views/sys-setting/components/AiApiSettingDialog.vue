@@ -82,6 +82,7 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Icon} from '@iconify/vue';
 import {settingAiKeyReveal, settingAiKeyRotate, settingSet} from '@/request/setting.js';
+import {getActiveBackendOrigin} from '@/utils/backend-router.js';
 
 const props = defineProps({
   modelValue: {type: Boolean, default: false},
@@ -106,7 +107,7 @@ const saveLoading = ref(false);
 
 const hasKey = computed(() => Boolean(rawKey.value || props.maskedKey));
 const displayKey = computed(() => (keyVisible.value && rawKey.value ? rawKey.value : (rawKey.value || props.maskedKey || '')));
-const originUrl = computed(() => (typeof window !== 'undefined' ? window.location.origin : 'https://your-domain'));
+const originUrl = computed(() => getActiveBackendOrigin() || (typeof window !== 'undefined' ? window.location.origin : 'https://your-domain'));
 const mcpEndpoint = computed(() => `${originUrl.value}/api/mcp`);
 
 function buildMcpConfig(tokenPlaceholder) {

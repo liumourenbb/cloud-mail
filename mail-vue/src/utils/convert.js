@@ -1,4 +1,5 @@
 import {useSettingStore} from "@/store/setting.js";
+import {buildBackendAssetUrl} from "@/utils/backend-router.js";
 export function cvtR2Url(key) {
 
     if (!key) {
@@ -13,9 +14,9 @@ export function cvtR2Url(key) {
 
     let domain = settings.r2Domain
 
-    // No public CDN domain: serve via this site's /attachments|/static|/oss proxy
+    // No public CDN domain: serve via active backend's /attachments|/static|/oss proxy
     if (!domain) {
-        return '/' + String(key).replace(/^\//, '')
+        return buildBackendAssetUrl(key)
     }
 
     if (!domain.startsWith('http')) {
