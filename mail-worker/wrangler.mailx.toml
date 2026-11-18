@@ -1,0 +1,39 @@
+name = "cloud-mail-x"
+main = "src/index.js"
+compatibility_date = "2025-06-04"
+keep_vars = true
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "db"
+database_name = "mailx"
+database_id = "359623d1-81e1-4150-95ec-8652ca848964"
+
+[[kv_namespaces]]
+binding = "kv"
+id = "b2c4be8a4241431ea4985193f8f8065f"
+
+# R2 not enabled on account
+#[[r2_buckets]]
+#binding = "r2"
+#bucket_name = ""
+
+[[send_email]]
+name = "forward"
+
+[ai]
+binding = "ai"
+
+[assets]
+binding = "assets"
+directory = "./dist"
+not_found_handling = "single-page-application"
+run_worker_first = true
+
+[triggers]
+crons = ["0 * * * *"]
+
+[build]
+command = "pnpm --prefix ../mail-vue install && pnpm --prefix ../mail-vue run build"
